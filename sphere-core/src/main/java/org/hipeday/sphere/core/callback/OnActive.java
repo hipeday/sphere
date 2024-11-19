@@ -9,7 +9,7 @@ import org.hipeday.sphere.core.context.SphereContext;
  * @since 1.1.0.20
  */
 @FunctionalInterface
-public interface Activated extends Callback {
+public interface OnActive {
 
     void activated(SphereContext context);
 

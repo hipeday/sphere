@@ -1,5 +1,7 @@
 package org.hipeday.sphere.core.network;
 
+import org.hipeday.sphere.core.config.SphereConfiguration;
+
 /**
  * 网络客户端工厂
  *
@@ -14,6 +16,6 @@ public interface ClientFactory<T> {
      *
      * @return 客户端
      */
-    Client createClient(SphereClientConfig<T> config);
+    Client createClient(SphereClientConfig<T> config, SphereConfiguration configuration);
 
 }

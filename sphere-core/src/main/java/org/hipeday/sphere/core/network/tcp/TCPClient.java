@@ -2,17 +2,18 @@ package org.hipeday.sphere.core.network.tcp;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.hipeday.sphere.core.config.SphereConfiguration;
+import org.hipeday.sphere.core.context.Session;
 import org.hipeday.sphere.core.context.TCPClientContext;
+import org.hipeday.sphere.core.context.TCPSession;
+import org.hipeday.sphere.core.logging.SphereLogger;
 import org.hipeday.sphere.core.network.AbstractClient;
 import org.hipeday.sphere.core.network.InetAddress;
 import org.hipeday.sphere.core.network.SphereClientConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * tcp客户端
@@ -22,19 +23,19 @@ import org.slf4j.LoggerFactory;
  */
 public class TCPClient extends AbstractClient {
 
-    private static final Logger log = LoggerFactory.getLogger(TCPClient.class);
+    private static final SphereLogger log = SphereLogger.getLogger(TCPClient.class);
 
     private final NioEventLoopGroup group = new NioEventLoopGroup();
 
-    private Channel channel;
+    private TCPSession session;
 
-    public TCPClient(SphereClientConfig<?> config) {
-        super(config);
+    public TCPClient(SphereClientConfig<?> config, SphereConfiguration configuration) {
+        super(config, configuration);
     }
 
     @Override
     public void connect() {
-        setContext(new TCPClientContext());
+        setContext(new TCPClientContext(this));
         try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group)
@@ -47,31 +48,42 @@ public class TCPClient extends AbstractClient {
                         }
                     });
             InetAddress inetAddress = config.serverAddress();
-            ChannelFuture future = bootstrap.connect(inetAddress.getHost(), inetAddress.getPort()).sync();
-            if (log.isInfoEnabled()) {
-                log.info("{} 客户端 {} 与服务器 {}:{} 连接成功", config.protocol(), config.clientId(), inetAddress.getHost(), inetAddress.getPort());
-            }
-            this.channel = future.channel();
+            bootstrap.connect(inetAddress.getHost(), inetAddress.getPort()).sync();
+            log.info("{} 客户端 {} 与服务器 {}:{} 连接成功", config.protocol(), config.clientId(), inetAddress.getHost(), inetAddress.getPort());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
+    public Session getSession() {
+        return session;
+    }
+
+    @Override
+    public void setSession(Session session) {
+        this.session = (TCPSession) session;
+    }
+
+    @Override
     public void writeAndFlush(Object msg) {
-        if (channel == null) {
+        if (session.getChannel() == null) {
             throw new IllegalStateException("Channel is not connected");
         }
-        channel.writeAndFlush(msg);
+        session.getChannel().writeAndFlush(msg);
     }
 
     @Override
     public boolean isConnected() {
-        return channel != null && channel.isActive();
+        return session != null && session.getChannel() != null && session.getChannel().isActive();
     }
 
     @Override
     public void close() {
+        if (session.getChannel() != null) {
+            log.info("关闭客户端 {}", config.clientId());
+            session.getChannel().close();
+        }
         group.shutdownGracefully();
     }
 

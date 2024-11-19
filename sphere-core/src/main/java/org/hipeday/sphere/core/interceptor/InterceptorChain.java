@@ -49,6 +49,15 @@ public class InterceptorChain implements Interceptor {
         if (index < interceptors.size()) {
             interceptors.get(index++).activated(context);
         }
+        index = 0;
     }
 
+    @Override
+    public Object onBeforeExecute(SphereContext context, Object payload) {
+        if (index < interceptors.size()) {
+            return interceptors.get(index++).onBeforeExecute(context, payload);
+        }
+        index = 0;
+        return payload;
+    }
 }

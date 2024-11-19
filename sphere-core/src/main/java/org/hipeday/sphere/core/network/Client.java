@@ -1,6 +1,9 @@
 package org.hipeday.sphere.core.network;
 
+import org.hipeday.sphere.core.config.SphereConfiguration;
+import org.hipeday.sphere.core.context.Session;
 import org.hipeday.sphere.core.context.SphereContext;
+import org.hipeday.sphere.core.interceptor.InterceptorChain;
 
 /**
  * 网络客户端
@@ -28,6 +31,34 @@ public interface Client {
      * 连接
      */
     void connect();
+
+    /**
+     * 获取会话
+     *
+     * @return 会话
+     */
+    Session getSession();
+
+    /**
+     * 设置会话
+     *
+     * @param session 会话
+     */
+    void setSession(Session session);
+
+    /**
+     * 获取拦截器链
+     *
+     * @return 拦截器链
+     */
+    InterceptorChain getInterceptorChain();
+
+    /**
+     * 获取配置
+     *
+     * @return 配置
+     */
+    SphereConfiguration getConfiguration();
 
     /**
      * 写数据并且刷新缓冲区

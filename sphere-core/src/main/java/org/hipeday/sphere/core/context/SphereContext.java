@@ -1,5 +1,8 @@
 package org.hipeday.sphere.core.context;
 
+import org.hipeday.sphere.core.config.SphereConfiguration;
+import org.hipeday.sphere.core.network.Client;
+
 /**
  * Sphere上下文对象
  *
@@ -7,5 +10,11 @@ package org.hipeday.sphere.core.context;
  * @since 1.1.0.20
  */
 public interface SphereContext {
+
+    Client getClient();
+
+    Session getSession();
+
+    SphereConfiguration getConfiguration();
 
 }

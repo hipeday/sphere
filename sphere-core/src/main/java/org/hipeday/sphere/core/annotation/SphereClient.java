@@ -1,6 +1,8 @@
 package org.hipeday.sphere.core.annotation;
 
 import org.hipeday.sphere.core.interceptor.Interceptor;
+import org.hipeday.sphere.core.listener.DefaultHeartbeatListener;
+import org.hipeday.sphere.core.listener.Listener;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -20,7 +22,7 @@ import java.lang.annotation.Target;
 public @interface SphereClient {
 
     /**
-     * 客户端类型
+     * 客户端协议
      */
     ClientProtocol protocol();
 
@@ -28,5 +30,11 @@ public @interface SphereClient {
      * 拦截器
      */
     Class<? extends Interceptor>[] interceptors() default {};
+
+    /**
+     * 心跳消息处理器
+     */
+    Class<? extends Listener> heartbeatListener() default DefaultHeartbeatListener.class;
+
 
 }

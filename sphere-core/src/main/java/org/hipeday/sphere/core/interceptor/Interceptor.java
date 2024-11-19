@@ -1,7 +1,9 @@
 package org.hipeday.sphere.core.interceptor;
 
 
-import org.hipeday.sphere.core.callback.Activated;
+import org.hipeday.sphere.core.callback.OnActive;
+import org.hipeday.sphere.core.callback.OnCommandAnalysis;
+import org.hipeday.sphere.core.context.SphereContext;
 
 /**
  * 拦截器接口
@@ -9,6 +11,16 @@ import org.hipeday.sphere.core.callback.Activated;
  * @author jixiangup
  * @since 1.1.0.20
  */
-public interface Interceptor extends Activated {
+public interface Interceptor extends OnActive, OnCommandAnalysis {
 
+    @Override
+    default void activated(SphereContext context) {
+        // do nothing
+    }
+
+    @Override
+    default Object onBeforeExecute(SphereContext context, Object payload) {
+        // do nothing
+        return payload;
+    }
 }

@@ -1,10 +1,10 @@
 package org.hipeday.sphere.core.reflection;
 
 import org.hipeday.sphere.core.annotation.ClientProtocol;
+import org.hipeday.sphere.core.annotation.Payload;
 import org.hipeday.sphere.core.annotation.SphereClient;
 import org.hipeday.sphere.core.assertion.Assert;
 import org.hipeday.sphere.core.config.SphereConfiguration;
-import org.hipeday.sphere.core.interceptor.Interceptor;
 import org.hipeday.sphere.core.interceptor.InterceptorChain;
 import org.hipeday.sphere.core.network.Client;
 import org.hipeday.sphere.core.network.ClientFactories;
@@ -30,7 +30,8 @@ public class SphereMethod<T> {
     private final ClientProtocol protocol;
     private String clientId;
     private InetAddress inetAddress;
-    private InterceptorChain interceptorChain;
+    private Object payload;
+    private String heartbeat;
 
     public SphereMethod(InterfaceProxyHandler<T> proxyHandler, SphereConfiguration configuration, Method method, Class<T> interfaceClass) {
         this.configuration = configuration;
@@ -61,14 +62,14 @@ public class SphereMethod<T> {
 
         // 1. 判断当前Client是否已经创建了连接 如果没有则创建连接否则从连接池获取
         Client client = configuration.getNetworkClientCache().computeIfAbsent(clientId, k -> {
-            SphereClientConfig<T> sphereClientConfig = new SphereClientConfig<>(clientId, protocol, inetAddress, interfaceClass);
-            return ClientFactories.getClientFactory(protocol).createClient(sphereClientConfig);
+            SphereClientConfig<T> sphereClientConfig = new SphereClientConfig<>(clientId, protocol, inetAddress, interfaceClass, heartbeat);
+            return ClientFactories.getClientFactory(protocol).createClient(sphereClientConfig, configuration);
         });
 
         // 判断是否要缓存网络客户端
         boolean networkClientCacheEnabled = configuration.isNetworkClientCacheEnabled();
         if (networkClientCacheEnabled) {
-            configuration.getNetworkClientCache().put(clientId, client);
+            SphereConfiguration.cacheNetworkClient(clientId, client);
         }
 
         // 判断当前客户端是否已经连接 如果没有连接则连接
@@ -77,7 +78,8 @@ public class SphereMethod<T> {
         }
 
         // 发送消息 这里的消息内容要重新获取 使用 @Command 去获取
-        client.writeAndFlush("123");
+        Object data = client.getInterceptorChain().onBeforeExecute(client.getContext(), this.payload);
+        client.writeAndFlush(data);
         return null;
     }
 
@@ -98,6 +100,12 @@ public class SphereMethod<T> {
                     case "org.hipeday.sphere.core.annotation.ClientPort":
                         port = Integer.parseInt(args[i].toString());
                         break;
+                    case "org.hipeday.sphere.core.annotation.Payload":
+                        payload = args[i];
+                        break;
+                    case "org.hipeday.sphere.core.annotation.Heartbeat":
+                        heartbeat = args[i].toString();
+                        break;
                 }
             }
         }
@@ -108,6 +116,8 @@ public class SphereMethod<T> {
         }
 
         Assert.hasText(clientId, "The parameter does not use @ClientId to identify the client's unique identifier");
+
+        Assert.notNull(payload, "The parameter does not use @Payload to identify the client's payload");
     }
 
 }
