@@ -1,6 +1,5 @@
 package org.hipeday.sphere.core.interceptor;
 
-import org.hipeday.sphere.core.config.SphereConfiguration;
 import org.hipeday.sphere.core.context.SphereContext;
 import org.hipeday.sphere.core.util.ArrayUtils;
 

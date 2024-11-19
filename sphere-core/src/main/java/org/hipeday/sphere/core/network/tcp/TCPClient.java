@@ -1,6 +1,7 @@
 package org.hipeday.sphere.core.network.tcp;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -70,7 +71,19 @@ public class TCPClient extends AbstractClient {
         if (session.getChannel() == null) {
             throw new IllegalStateException("Channel is not connected");
         }
-        session.getChannel().writeAndFlush(msg);
+        if (msg instanceof byte[] data) {
+            writeAndFlush(data);
+        } else {
+            throw new IllegalArgumentException("Unsupported data type: " + msg.getClass());
+        }
+    }
+
+    @Override
+    public void writeAndFlush(byte[] msg) {
+        Channel channel = this.session.getChannel();
+        ByteBuf buffer = channel.alloc().buffer(msg.length);
+        buffer.writeBytes(msg);
+        channel.writeAndFlush(buffer);
     }
 
     @Override

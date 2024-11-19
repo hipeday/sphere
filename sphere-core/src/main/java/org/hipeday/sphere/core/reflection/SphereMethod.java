@@ -1,11 +1,9 @@
 package org.hipeday.sphere.core.reflection;
 
 import org.hipeday.sphere.core.annotation.ClientProtocol;
-import org.hipeday.sphere.core.annotation.Payload;
 import org.hipeday.sphere.core.annotation.SphereClient;
 import org.hipeday.sphere.core.assertion.Assert;
 import org.hipeday.sphere.core.config.SphereConfiguration;
-import org.hipeday.sphere.core.interceptor.InterceptorChain;
 import org.hipeday.sphere.core.network.Client;
 import org.hipeday.sphere.core.network.ClientFactories;
 import org.hipeday.sphere.core.network.InetAddress;
@@ -14,7 +12,6 @@ import org.hipeday.sphere.core.proxy.InterfaceProxyHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * Sphere 方法实例
@@ -61,10 +58,11 @@ public class SphereMethod<T> {
         parameterPreparation(args);
 
         // 1. 判断当前Client是否已经创建了连接 如果没有则创建连接否则从连接池获取
-        Client client = configuration.getNetworkClientCache().computeIfAbsent(clientId, k -> {
-            SphereClientConfig<T> sphereClientConfig = new SphereClientConfig<>(clientId, protocol, inetAddress, interfaceClass, heartbeat);
-            return ClientFactories.getClientFactory(protocol).createClient(sphereClientConfig, configuration);
-        });
+        Client client = configuration.getNetworkClientCache().get(clientId);
+        if (client == null) {
+            SphereClientConfig<T> clientConfig = new SphereClientConfig<>(clientId, protocol, inetAddress, interfaceClass, heartbeat);
+            client = ClientFactories.getClientFactory(protocol).createClient(clientConfig, configuration);
+        }
 
         // 判断是否要缓存网络客户端
         boolean networkClientCacheEnabled = configuration.isNetworkClientCacheEnabled();

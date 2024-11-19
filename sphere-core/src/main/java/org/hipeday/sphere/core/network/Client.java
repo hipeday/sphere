@@ -66,6 +66,11 @@ public interface Client {
     void writeAndFlush(Object msg);
 
     /**
+     * 写数据
+     */
+    void writeAndFlush(byte[] msg);
+
+    /**
      * 当前网络客户端是否连接
      *
      * @return 是否连接

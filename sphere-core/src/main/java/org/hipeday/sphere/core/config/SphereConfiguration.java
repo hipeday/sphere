@@ -17,7 +17,7 @@ public class SphereConfiguration {
 
     private final static SphereConfiguration INSTANCE = new SphereConfiguration();
 
-    private final static ShutdownHook SHUTDOWN_HOOK = new ShutdownHook();
+    private static ShutdownHook SHUTDOWN_HOOK;
 
     /**
      * 请求接口的实例缓存，用于缓存请求接口的实例
@@ -48,7 +48,10 @@ public class SphereConfiguration {
     private Boolean networkClientCacheEnabled = true;
 
     public static SphereConfiguration configuration() {
-        Runtime.getRuntime().addShutdownHook(new Thread(SHUTDOWN_HOOK, "SphereShutdownHook"));
+        if (SHUTDOWN_HOOK == null) {
+            SHUTDOWN_HOOK = new ShutdownHook();
+            Runtime.getRuntime().addShutdownHook(new Thread(SHUTDOWN_HOOK, "SphereShutdownHook"));
+        }
         return INSTANCE;
     }
 
@@ -71,9 +74,18 @@ public class SphereConfiguration {
        return (ProxyFactory<T>) CLIENT_PROXY_FACTORY_CACHE.computeIfAbsent(clazz, k -> new ProxyFactory<>(this, clazz));
     }
 
+    /**
+     * 缓存网络客户端接口实例
+     * 同时将网络客户端缓存到关闭回调钩子中
+     *
+     * @param clientId 网络客户端的唯一ID
+     * @param client  网络客户端实例
+     */
     public static void cacheNetworkClient(String clientId, Client client) {
-        NETWORK_CLIENT_CACHE.put(clientId, client);
-        SHUTDOWN_HOOK.addClient(client);
+        if (!NETWORK_CLIENT_CACHE.containsKey(clientId)) {
+            SHUTDOWN_HOOK.addClient(client);
+            NETWORK_CLIENT_CACHE.put(clientId, client);
+        }
     }
 
     /**
