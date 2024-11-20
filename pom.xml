@@ -10,6 +10,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>sphere-core</module>
+        <module>sphere-spring</module>
+        <module>sphere-spring-boot-starter</module>
     </modules>
 
     <properties>
@@ -31,10 +33,31 @@
 
         <!-- 单元测试 -->
         <junit.version>5.11.2</junit.version>
+
+        <spring-boot.version>3.3.5</spring-boot.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hipeday</groupId>
+                <artifactId>sphere-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hipeday</groupId>
+                <artifactId>sphere-spring</artifactId>
+                <version>${revision}</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
             <dependency>
                 <groupId>io.netty</groupId>

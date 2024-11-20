@@ -27,7 +27,7 @@ public abstract class Sphere {
      * @param <T> 客户端类型
      */
     public static <T> T client(Class<T> clazz) {
-        return Sphere.config().createClient(clazz).createProxy();
+        return Sphere.config().createClient(clazz);
     }
 
 

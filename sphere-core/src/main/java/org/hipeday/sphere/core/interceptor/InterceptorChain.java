@@ -16,8 +16,11 @@ import java.util.List;
  */
 public class InterceptorChain implements Interceptor {
 
-    private final List<Interceptor> interceptors;
+    private List<Interceptor> interceptors;
     private int index = 0;
+
+    public InterceptorChain() {
+    }
 
     public InterceptorChain(List<Interceptor> interceptors) {
         this.interceptors = interceptors;

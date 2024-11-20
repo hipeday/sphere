@@ -1,5 +1,7 @@
 package org.hipeday.sphere.core.util;
 
+import java.util.Collection;
+
 /**
  * 字符串工具类
  *
@@ -16,6 +18,14 @@ public class StringUtils {
      */
     public static boolean hasText(String text) {
         return org.apache.commons.lang3.StringUtils.isNotBlank(text);
+    }
+
+    public static String[] toStringArray(Collection<String> collection) {
+        if (CollectionUtils.isEmpty(collection)) {
+            return null;
+        }
+        String[] array = new String[collection.size()];
+        return collection.toArray(array);
     }
 
 }

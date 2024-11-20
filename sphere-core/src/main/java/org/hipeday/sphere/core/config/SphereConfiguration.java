@@ -17,6 +17,8 @@ public class SphereConfiguration {
 
     private final static SphereConfiguration INSTANCE = new SphereConfiguration();
 
+    private final static SphereConfiguration DEFAULT = configuration();
+
     private static ShutdownHook SHUTDOWN_HOOK;
 
     /**
@@ -47,6 +49,10 @@ public class SphereConfiguration {
 
     private Boolean networkClientCacheEnabled = true;
 
+    public static SphereConfiguration getDefaultConfiguration() {
+        return DEFAULT;
+    }
+
     public static SphereConfiguration configuration() {
         if (SHUTDOWN_HOOK == null) {
             SHUTDOWN_HOOK = new ShutdownHook();
@@ -70,8 +76,20 @@ public class SphereConfiguration {
      * @return 客户端代理工厂
      * @param <T> 客户端类型
      */
-    public <T> ProxyFactory<T> createClient(Class<T> clazz) {
-       return (ProxyFactory<T>) CLIENT_PROXY_FACTORY_CACHE.computeIfAbsent(clazz, k -> new ProxyFactory<>(this, clazz));
+    public <T> ProxyFactory<T> createClientFactory(Class<T> clazz) {
+        ProxyFactory<?> proxyFactory = CLIENT_PROXY_FACTORY_CACHE.computeIfAbsent(clazz, k -> new ProxyFactory<>(this, clazz));
+        return (ProxyFactory<T>) proxyFactory;
+    }
+
+    /**
+     * 创建客户端
+     *
+     * @param clazz 客户端接口
+     * @return 客户端实例
+     * @param <T> 客户端类型
+     */
+    public <T> T createClient(Class<T> clazz) {
+        return createClientFactory(clazz).createProxy();
     }
 
     /**

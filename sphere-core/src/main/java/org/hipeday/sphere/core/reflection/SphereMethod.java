@@ -38,8 +38,6 @@ public class SphereMethod<T> {
         this.protocol = sphereClient.protocol();
     }
 
-
-
     public SphereClient getSphereClient() {
         SphereClient sphereClient = interfaceClass.getAnnotation(SphereClient.class);
         Assert.notNull(sphereClient, "The interface class does not use @SphereClient annotation");
