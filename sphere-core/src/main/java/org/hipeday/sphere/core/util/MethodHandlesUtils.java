@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
  * 函数处理器工具类
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class MethodHandlesUtils {
 

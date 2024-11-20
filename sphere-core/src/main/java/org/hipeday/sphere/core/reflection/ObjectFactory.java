@@ -6,7 +6,7 @@ package org.hipeday.sphere.core.reflection;
  * <p>当这些累没有实力的情况下，会先实例化并缓存下来，以后再取回通过缓存获取对象</p>
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public interface ObjectFactory {
 

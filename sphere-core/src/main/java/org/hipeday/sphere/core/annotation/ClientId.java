@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * 客户端唯一ID注解 该注解用于标识指定参数为客户端的唯一ID
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 @Documented
 @Target({ElementType.PARAMETER})

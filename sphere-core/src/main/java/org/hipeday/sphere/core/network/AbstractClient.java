@@ -11,7 +11,7 @@ import org.hipeday.sphere.core.interceptor.InterceptorChain;
  * 抽象网络客户端实现
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public abstract class AbstractClient implements Client {
 

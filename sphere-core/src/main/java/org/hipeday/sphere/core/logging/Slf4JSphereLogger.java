@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
  * Slf4j日志对象实例
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class Slf4JSphereLogger extends AbstractSphereLogger {
 

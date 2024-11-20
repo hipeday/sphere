@@ -2,7 +2,7 @@ package org.hipeday.sphere.core.reflection;
 
 /**
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface ObjectConstructor<T> {

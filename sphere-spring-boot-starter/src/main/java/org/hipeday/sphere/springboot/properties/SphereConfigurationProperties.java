@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * Sphere 自动装配配置文件属性
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 @Component
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)

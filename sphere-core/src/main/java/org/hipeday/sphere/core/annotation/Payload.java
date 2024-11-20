@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * 指令参数注解 用于标注当前参数作为指令参数
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 @Documented
 @Target(ElementType.PARAMETER)

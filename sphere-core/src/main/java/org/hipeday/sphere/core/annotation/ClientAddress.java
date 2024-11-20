@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * 该注解用于标注客户端地址
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 @Documented
 @Target({ElementType.PARAMETER})

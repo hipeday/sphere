@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
  * 客户端处理器
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 

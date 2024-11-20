@@ -17,10 +17,11 @@ import java.lang.reflect.Method;
  * Sphere 方法实例
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class SphereMethod<T> {
 
+    private final InterfaceProxyHandler<T> proxyHandler;
     private final SphereConfiguration configuration;
     private final Class<T> interfaceClass;
     private final Method method;
@@ -31,6 +32,7 @@ public class SphereMethod<T> {
     private String heartbeat;
 
     public SphereMethod(InterfaceProxyHandler<T> proxyHandler, SphereConfiguration configuration, Method method, Class<T> interfaceClass) {
+        this.proxyHandler = proxyHandler;
         this.configuration = configuration;
         this.method = method;
         this.interfaceClass = interfaceClass;

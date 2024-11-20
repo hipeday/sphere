@@ -11,7 +11,7 @@ import java.util.List;
  * 退出回调
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class ShutdownHook implements Runnable {
 

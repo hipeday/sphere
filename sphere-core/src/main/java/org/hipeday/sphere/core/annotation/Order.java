@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * 回调函数优先级注解
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 @Documented
 @Target(ElementType.TYPE)

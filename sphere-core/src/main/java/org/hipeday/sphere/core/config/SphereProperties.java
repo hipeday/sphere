@@ -4,7 +4,7 @@ package org.hipeday.sphere.core.config;
  * Sphere 属性文件配置
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class SphereProperties {
 

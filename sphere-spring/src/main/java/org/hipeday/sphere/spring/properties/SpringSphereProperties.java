@@ -10,7 +10,7 @@ import org.springframework.core.env.Environment;
  * Spring Sphere配置文件属性
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class SpringSphereProperties extends SphereProperties implements ApplicationContextAware {
 

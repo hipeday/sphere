@@ -4,7 +4,7 @@ package org.hipeday.sphere.core.logging;
  * 抽象日志对象实例
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public abstract class AbstractSphereLogger implements SphereLogger {
 

@@ -4,7 +4,7 @@ package org.hipeday.sphere.core.interceptor;
  * 拦截器工厂
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public interface InterceptorFactory {
 

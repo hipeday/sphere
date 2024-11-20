@@ -8,7 +8,7 @@ import java.util.Enumeration;
  * 地址信息
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class InetAddress {
 

@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
  * IOT物联网设备日志控制对象
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public interface SphereLogger {
 

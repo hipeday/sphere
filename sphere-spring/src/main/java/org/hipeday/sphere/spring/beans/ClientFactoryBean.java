@@ -11,7 +11,7 @@ import org.springframework.lang.NonNull;
  * 接口客户端工厂bean
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class ClientFactoryBean<T> implements FactoryBean<T>, ApplicationContextAware {
 

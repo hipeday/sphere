@@ -8,7 +8,7 @@ import java.text.MessageFormat;
  * jdk默认日志对象
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class JDKSphereLogger extends AbstractSphereLogger {
 

@@ -9,7 +9,7 @@ import org.hipeday.sphere.core.context.SphereContext;
  * 拦截器接口
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public interface Interceptor extends OnActive, OnCommandAnalysis {
 

@@ -6,7 +6,7 @@ import org.hipeday.sphere.core.context.SphereContext;
  * 默认心跳监听器
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class DefaultHeartbeatListener implements Listener {
 

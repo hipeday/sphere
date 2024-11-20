@@ -22,7 +22,7 @@ import java.util.Objects;
  * Sphere Bean注册器
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class SphereBeanRegister implements ResourceLoaderAware {
 

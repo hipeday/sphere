@@ -6,7 +6,7 @@ import org.hipeday.sphere.core.config.SphereConfiguration;
  * Sphere 启动调用客户端
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public abstract class Sphere {
 

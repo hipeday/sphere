@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 接口代理处理器
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class InterfaceProxyHandler<T> implements InvocationHandler {
 

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 默认拦截器工厂
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class DefaultInterceptorFactory implements InterceptorFactory {
 

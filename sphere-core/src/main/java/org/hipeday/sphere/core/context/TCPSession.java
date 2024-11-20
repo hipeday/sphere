@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
  * tcp客户端会话
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public class TCPSession implements Session {
 

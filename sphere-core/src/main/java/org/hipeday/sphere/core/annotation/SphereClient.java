@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * Sphere客户端注解
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 @Documented
 @Target(ElementType.TYPE)

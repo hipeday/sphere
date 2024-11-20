@@ -4,7 +4,7 @@ package org.hipeday.sphere.core.annotation;
  * 客户端类型枚举
  *
  * @author jixiangup
- * @since 1.1.0.20
+ * @since 1.0.0
  */
 public enum ClientProtocol {
 
