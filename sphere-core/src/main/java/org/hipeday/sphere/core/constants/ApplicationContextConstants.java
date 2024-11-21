@@ -43,4 +43,10 @@ public interface ApplicationContextConstants {
      */
     String LISTENER_CHAIN_REGISTRY_NAME = "listener-chain-registry";
 
+    /**
+     * 监听器注册表名称
+     */
+    String LISTENER_REGISTRY_NAME = "listener-registry";
+
+
 }

@@ -2,11 +2,14 @@ package org.hipeday.sphere.core.context;
 
 import org.hipeday.sphere.core.interceptor.support.DefaultInterceptorFactory;
 import org.hipeday.sphere.core.interceptor.InterceptorFactory;
+import org.hipeday.sphere.core.listener.ListenerFactory;
+import org.hipeday.sphere.core.listener.support.DefaultListenerFactory;
 import org.hipeday.sphere.core.registry.support.FunctionRegistry;
 import org.hipeday.sphere.core.registry.support.InterceptorChainRegistry;
 import org.hipeday.sphere.core.registry.support.InterceptorRegistry;
 import org.hipeday.sphere.core.registry.support.InterfaceClientRegistry;
 import org.hipeday.sphere.core.registry.support.ListenerChainRegistry;
+import org.hipeday.sphere.core.registry.support.ListenerRegistry;
 import org.hipeday.sphere.core.registry.support.NetworkClientRegistry;
 import org.hipeday.sphere.core.registry.support.SphereContextRegistry;
 
@@ -49,14 +52,24 @@ public final class ApplicationContext {
      private static final SphereContextRegistry SPHERE_CONTEXT_REGISTRY = new SphereContextRegistry();
 
     /**
-     * 监听器注册表
+     * 监听器调用链注册表
      */
     private static final ListenerChainRegistry LISTENER_CHAIN_REGISTRY = new ListenerChainRegistry();
+
+    /**
+     * 监听器注册表
+     */
+    private static final ListenerRegistry LISTENER_REGISTRY = new ListenerRegistry();
 
     /**
      * 拦截器工厂实例
      */
     private static InterceptorFactory INTERCEPTOR_FACTORY = new DefaultInterceptorFactory();
+
+    /**
+     * 监听器工厂实例
+     */
+    private static ListenerFactory LISTENER_FACTORY = new DefaultListenerFactory();
 
     /**
      * 应用程序上下文持有者
@@ -147,7 +160,19 @@ public final class ApplicationContext {
         return INTERCEPTOR_FACTORY;
     }
 
+    public ListenerRegistry getListenerRegistry() {
+        return LISTENER_REGISTRY;
+    }
+
     public void setInterceptorFactory(InterceptorFactory interceptorFactory) {
         INTERCEPTOR_FACTORY = interceptorFactory;
+    }
+
+    public ListenerFactory getListenerFactory() {
+        return LISTENER_FACTORY;
+    }
+
+    public void setListenerFactory(ListenerFactory listenerFactory) {
+        LISTENER_FACTORY = listenerFactory;
     }
 }

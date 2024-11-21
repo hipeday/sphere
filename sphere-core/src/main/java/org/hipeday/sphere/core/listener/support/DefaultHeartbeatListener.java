@@ -4,6 +4,9 @@ import org.hipeday.sphere.core.annotation.ListenerHandler;
 import org.hipeday.sphere.core.annotation.Order;
 import org.hipeday.sphere.core.context.SphereContext;
 import org.hipeday.sphere.core.listener.Listener;
+import org.hipeday.sphere.core.logging.SphereLogger;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * 默认心跳监听器
@@ -15,13 +18,10 @@ import org.hipeday.sphere.core.listener.Listener;
 @Order(Integer.MIN_VALUE)
 public class DefaultHeartbeatListener implements Listener {
 
-    @Override
-    public void listener(SphereContext context, byte[] message) {
-        // do nothing
-    }
+    private final static SphereLogger log = SphereLogger.getLogger(DefaultHeartbeatListener.class);
 
     @Override
-    public void activated(SphereContext context) {
-
+    public void heartbeat(SphereContext sphereContext, byte[] heartbeatMetadata) {
+        log.debug("client {} trigger heartbeat, metadata {}", sphereContext.getClient().clientId(), new String(heartbeatMetadata, StandardCharsets.UTF_8));
     }
 }

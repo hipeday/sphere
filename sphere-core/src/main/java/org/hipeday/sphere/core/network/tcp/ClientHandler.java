@@ -5,11 +5,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.hipeday.sphere.core.context.ApplicationContext;
 import org.hipeday.sphere.core.context.SphereContext;
+import org.hipeday.sphere.core.listener.ListenerChain;
+import org.hipeday.sphere.core.logging.SphereLogger;
 import org.hipeday.sphere.core.session.support.TCPSession;
-import org.hipeday.sphere.core.listener.Listener;
 import org.hipeday.sphere.core.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
@@ -21,7 +20,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
+    private static final SphereLogger log = SphereLogger.getLogger(ClientHandler.class);
 
     private final SphereContext context;
 
@@ -34,26 +33,25 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         if (context.getClient().getSession() == null) {
             context.getClient().setSession(new TCPSession(ctx.channel()));
         }
-        // TODO 执行监听器 触发active
+        context.getListenerChain().activated(context);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         String heartbeatCommand = context.getClient().getConfig().heartbeat();
+        ListenerChain listenerChain = context.getListenerChain();
         if (msg instanceof ByteBuf byteArrayMessage) {
             byte[] data = new byte[byteArrayMessage.readableBytes()];
             byteArrayMessage.readBytes(data);
             String message = new String(data, StandardCharsets.UTF_8);
             // 判断是否是心跳消息
             if (StringUtils.hasText(heartbeatCommand) && heartbeatCommand.equals(message)) {
-                Listener heartbeatListener = context.getClient().getConfig().getHeartbeatListener();
-                if (heartbeatListener != null) {
-                    heartbeatListener.listener(context, data);
+                if (listenerChain != null) {
+                    listenerChain.heartbeat(context, data);
                 }
-                return;
             }
-            if (log.isDebugEnabled()) {
-                log.debug("客户端收到消息: {}", message);
+            if (listenerChain != null) {
+                listenerChain.message(context, data);
             }
         }
     }

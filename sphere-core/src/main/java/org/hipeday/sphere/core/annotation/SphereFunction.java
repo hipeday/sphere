@@ -1,6 +1,7 @@
 package org.hipeday.sphere.core.annotation;
 
 import org.hipeday.sphere.core.interceptor.Interceptor;
+import org.hipeday.sphere.core.listener.Listener;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,5 +25,9 @@ public @interface SphereFunction {
      */
     Class<? extends Interceptor>[] interceptors() default {};
 
+    /**
+     * 监听器
+     */
+    Class<? extends Listener>[] listeners() default {};
 
 }

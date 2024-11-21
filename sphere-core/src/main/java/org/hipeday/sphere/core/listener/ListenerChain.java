@@ -1,7 +1,6 @@
 package org.hipeday.sphere.core.listener;
 
 import org.hipeday.sphere.core.context.SphereContext;
-import org.hipeday.sphere.core.interceptor.Interceptor;
 
 import java.util.List;
 
@@ -21,18 +20,16 @@ public class ListenerChain implements Listener {
     }
 
     @Override
-    public void listener(SphereContext context, byte[] message) {
+    public void heartbeat(SphereContext sphereContext, byte[] heartbeatMetadata) {
         for (Listener listener : listeners) {
-            listener.listener(context, message);
+            listener.heartbeat(sphereContext, heartbeatMetadata);
         }
     }
 
     @Override
     public void activated(SphereContext context) {
         for (Listener listener : listeners) {
-            if (listener instanceof Interceptor) {
-                listener.activated(context);
-            }
+            listener.activated(context);
         }
     }
 }

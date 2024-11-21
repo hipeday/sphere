@@ -47,7 +47,6 @@ public class TCPClient extends AbstractClient {
                     });
             InetAddress inetAddress = config.serverAddress();
             bootstrap.connect(inetAddress.getHost(), inetAddress.getPort()).sync();
-            log.info("{} 客户端 {} 与服务器 {}:{} 连接成功", config.protocol(), config.clientId(), inetAddress.getHost(), inetAddress.getPort());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

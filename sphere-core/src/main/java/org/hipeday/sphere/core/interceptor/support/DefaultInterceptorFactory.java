@@ -19,6 +19,7 @@ public class DefaultInterceptorFactory extends AbstractRegistryInterceptorFactor
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Interceptor> T getInterceptor(Class<T> clazz) {
         return (T) interceptorRegistry.computeIfUnregister(clazz, k -> {
             try {

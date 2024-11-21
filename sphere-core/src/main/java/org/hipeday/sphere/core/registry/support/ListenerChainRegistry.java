@@ -1,7 +1,7 @@
 package org.hipeday.sphere.core.registry.support;
 
 import org.hipeday.sphere.core.constants.ApplicationContextConstants;
-import org.hipeday.sphere.core.listener.Listener;
+import org.hipeday.sphere.core.listener.ListenerChain;
 import org.hipeday.sphere.core.network.Client;
 import org.hipeday.sphere.core.registry.AbstractRegistry;
 
@@ -11,7 +11,7 @@ import org.hipeday.sphere.core.registry.AbstractRegistry;
  * @author jixiangup
  * @since 1.0.0
  */
-public class ListenerChainRegistry extends AbstractRegistry<String, Listener> {
+public class ListenerChainRegistry extends AbstractRegistry<String, ListenerChain> {
     @Override
     public String getRegistryName() {
         return ApplicationContextConstants.LISTENER_CHAIN_REGISTRY_NAME;

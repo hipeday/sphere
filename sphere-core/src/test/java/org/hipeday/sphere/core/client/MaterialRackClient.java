@@ -7,8 +7,10 @@ import org.hipeday.sphere.core.annotation.ClientProtocol;
 import org.hipeday.sphere.core.annotation.Heartbeat;
 import org.hipeday.sphere.core.annotation.Command;
 import org.hipeday.sphere.core.annotation.SphereClient;
+import org.hipeday.sphere.core.annotation.SphereFunction;
 import org.hipeday.sphere.core.interceptor.OnActiveInterceptor;
-import org.hipeday.sphere.core.listener.HeartbeatListener;
+import org.hipeday.sphere.core.listener.support.DefaultConnectedListener;
+import org.hipeday.sphere.core.listener.support.DefaultHeartbeatListener;
 
 /**
  * 料架客户端
@@ -19,10 +21,11 @@ import org.hipeday.sphere.core.listener.HeartbeatListener;
 @SphereClient(
         protocol = ClientProtocol.TCP,
         interceptors = {OnActiveInterceptor.class},
-        heartbeatListener = HeartbeatListener.class
+        listeners = {DefaultConnectedListener.class}
 )
 public interface MaterialRackClient {
 
+    @SphereFunction(listeners = {DefaultHeartbeatListener.class})
     void invoke(
             @ClientId String clientId,
             @ClientAddress String address,

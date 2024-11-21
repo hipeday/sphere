@@ -5,7 +5,9 @@ import org.hipeday.sphere.core.annotation.SphereFunction;
 import org.hipeday.sphere.core.interceptor.Interceptor;
 import org.hipeday.sphere.core.interceptor.InterceptorChain;
 import org.hipeday.sphere.core.interceptor.InterceptorFactory;
+import org.hipeday.sphere.core.listener.Listener;
 import org.hipeday.sphere.core.listener.ListenerChain;
+import org.hipeday.sphere.core.listener.ListenerFactory;
 import org.hipeday.sphere.core.network.Client;
 import org.hipeday.sphere.core.reflection.Function;
 import org.hipeday.sphere.core.registry.support.InterceptorChainRegistry;
@@ -34,6 +36,7 @@ public abstract class AbstractSphereContext implements SphereContext {
     protected final InterceptorRegistry interceptorRegistry;
     protected final ListenerChainRegistry listenerChainRegistry;
     protected final InterceptorFactory interceptorFactory;
+    protected final ListenerFactory listenerFactory;
 
     public AbstractSphereContext(Client client, Function<?> function) {
         this.client = client;
@@ -43,6 +46,7 @@ public abstract class AbstractSphereContext implements SphereContext {
         listenerChainRegistry = applicationContext.getListenerChainRegistry();
         interceptorRegistry = applicationContext.getInterceptorRegistry();
         interceptorFactory = applicationContext.getInterceptorFactory();
+        listenerFactory = applicationContext.getListenerFactory();
 
         // 创建拦截器调用链
         createInterceptorChain();
@@ -115,10 +119,57 @@ public abstract class AbstractSphereContext implements SphereContext {
     }
 
     /**
+     * 解析接口声明监听器
+     *
+     * @param sphereClient 接口声明的 {@linkplain SphereClient SphereClient} 注解
+     *
+     * @return 解析到的监听器列表
+     */
+    protected List<Listener> parseInterfaceListeners(SphereClient sphereClient) {
+        if (null == sphereClient) {
+            return null;
+        }
+        return getListeners(sphereClient.listeners());
+    }
+
+    private List<Listener> getListeners(Class<? extends Listener>[] listenersClass) {
+        List<Listener> listeners = null;
+        if (ArrayUtils.isNotEmpty(listenersClass)) {
+            for (Class<? extends Listener> listener : listenersClass) {
+                Listener listenerInstance = listenerFactory.getListener(listener);
+                if (CollectionUtils.isEmpty(listeners)) {
+                    listeners = new ArrayList<>();
+                }
+                listeners.add(listenerInstance);
+            }
+        }
+        return listeners;
+    }
+
+    /**
      * 创建监听器调用链
      */
     protected void createListenerChain() {
+        // 获取全局监听器 暂时还没有配置以后再说 先留口子
 
+        // 解析接口声明监听器
+        List<Listener> interfaceListeners = parseInterfaceListeners(ClassUtils.getAnnotation(SphereClient.class, function.getInterfaceClass()));
+
+        // 解析函数监听器
+        List<Listener> functionListeners = parseFunctionListeners(MethodUtils.getAnnotation(SphereFunction.class, function.getMethod()));
+
+        // 所有的监听器
+        List<Listener> listeners = CollectionUtils.mergeToList(interfaceListeners, functionListeners);
+
+        // 创建监听器调用链
+        ListenerChain listenerChain = listenerChainRegistry.computeIfUnregister(client.clientId(), clientId -> new ListenerChain(listeners));
+    }
+
+    private List<Listener> parseFunctionListeners(SphereFunction annotation) {
+        if (null == annotation) {
+            return null;
+        }
+        return getListeners(annotation.listeners());
     }
 
     @Override
@@ -143,7 +194,7 @@ public abstract class AbstractSphereContext implements SphereContext {
 
     @Override
     public ListenerChain getListenerChain() {
-        return null;
+        return listenerChainRegistry.getInstance(client.clientId());
     }
 
     @Override
