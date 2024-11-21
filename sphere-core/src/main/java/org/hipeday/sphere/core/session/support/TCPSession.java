@@ -1,6 +1,7 @@
-package org.hipeday.sphere.core.context;
+package org.hipeday.sphere.core.session.support;
 
 import io.netty.channel.Channel;
+import org.hipeday.sphere.core.session.Session;
 
 /**
  * tcp客户端会话

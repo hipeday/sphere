@@ -1,10 +1,12 @@
 package org.hipeday.sphere.core.interceptor;
 
 import org.hipeday.sphere.core.context.SphereContext;
+import org.hipeday.sphere.core.network.Client;
 import org.hipeday.sphere.core.util.ArrayUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,10 +18,20 @@ import java.util.List;
  */
 public class InterceptorChain implements Interceptor {
 
-    private List<Interceptor> interceptors;
+    /**
+     * 拦截器调用链ID
+     * <p>
+     *     用于标识拦截器调用链
+     *     拦截器调用脸id应该和 {@link Client#clientId()} 保持一致
+     * </p>
+     */
+    private String id;
+
+    private final List<Interceptor> interceptors;
     private int index = 0;
 
     public InterceptorChain() {
+        interceptors = Collections.emptyList();
     }
 
     public InterceptorChain(List<Interceptor> interceptors) {
@@ -43,23 +55,15 @@ public class InterceptorChain implements Interceptor {
         }
     }
 
-    /**
-     * 当客户端激活时调用
-     */
     @Override
-    public void activated(SphereContext context) {
+    public Object onBeforeExecute(SphereContext context) {
         if (index < interceptors.size()) {
-            interceptors.get(index++).activated(context);
+            return interceptors.get(index++).onBeforeExecute(context);
         }
-        index = 0;
+        return context.getPayload();
     }
 
-    @Override
-    public Object onBeforeExecute(SphereContext context, Object payload) {
-        if (index < interceptors.size()) {
-            return interceptors.get(index++).onBeforeExecute(context, payload);
-        }
-        index = 0;
-        return payload;
+    public String getId() {
+        return id;
     }
 }

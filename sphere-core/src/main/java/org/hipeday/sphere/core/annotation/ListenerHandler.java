@@ -7,11 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 该注解用于指定当前类作为监听器处理器
+ *
  * @author jixiangup
  * @since 1.0.0
  */
 @Documented
-@Target(ElementType.PARAMETER)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Payload {
+public @interface ListenerHandler {
 }

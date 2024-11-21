@@ -77,7 +77,7 @@ public class SphereConfiguration {
      * @param <T> 客户端类型
      */
     public <T> ProxyFactory<T> createClientFactory(Class<T> clazz) {
-        ProxyFactory<?> proxyFactory = CLIENT_PROXY_FACTORY_CACHE.computeIfAbsent(clazz, k -> new ProxyFactory<>(this, clazz));
+        ProxyFactory<?> proxyFactory = CLIENT_PROXY_FACTORY_CACHE.computeIfAbsent(clazz, k -> new ProxyFactory<>(clazz));
         return (ProxyFactory<T>) proxyFactory;
     }
 

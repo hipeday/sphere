@@ -7,14 +7,12 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.hipeday.sphere.core.config.SphereConfiguration;
-import org.hipeday.sphere.core.context.Session;
-import org.hipeday.sphere.core.context.TCPClientContext;
-import org.hipeday.sphere.core.context.TCPSession;
+import org.hipeday.sphere.core.session.Session;
+import org.hipeday.sphere.core.session.support.TCPSession;
 import org.hipeday.sphere.core.logging.SphereLogger;
 import org.hipeday.sphere.core.network.AbstractClient;
 import org.hipeday.sphere.core.network.InetAddress;
-import org.hipeday.sphere.core.network.SphereClientConfig;
+import org.hipeday.sphere.core.network.NetworkClientConfig;
 
 /**
  * tcp客户端
@@ -30,13 +28,12 @@ public class TCPClient extends AbstractClient {
 
     private TCPSession session;
 
-    public TCPClient(SphereClientConfig<?> config, SphereConfiguration configuration) {
-        super(config, configuration);
+    public TCPClient(NetworkClientConfig<?> config) {
+        super(config);
     }
 
     @Override
     public void connect() {
-        setContext(new TCPClientContext(this));
         try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group)
@@ -45,7 +42,7 @@ public class TCPClient extends AbstractClient {
                     .handler(new ChannelInitializer<>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
-                            ch.pipeline().addLast(new ClientHandler(interceptorChain, getContext()));
+                            ch.pipeline().addLast(new ClientHandler(config.clientId()));
                         }
                     });
             InetAddress inetAddress = config.serverAddress();
@@ -100,5 +97,8 @@ public class TCPClient extends AbstractClient {
         group.shutdownGracefully();
     }
 
-
+    @Override
+    public String clientId() {
+        return config.clientId();
+    }
 }

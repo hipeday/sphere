@@ -1,9 +1,10 @@
-package org.hipeday.sphere.core.interceptor;
+package org.hipeday.sphere.core.interceptor.support;
+
+import org.hipeday.sphere.core.interceptor.AbstractRegistryInterceptorFactory;
+import org.hipeday.sphere.core.interceptor.Interceptor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 默认拦截器工厂
@@ -11,26 +12,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author jixiangup
  * @since 1.0.0
  */
-public class DefaultInterceptorFactory implements InterceptorFactory {
+public class DefaultInterceptorFactory extends AbstractRegistryInterceptorFactory {
 
-    /**
-     * 拦截器实例缓存
-     */
-    protected final Map<Class<?>, Interceptor> INTERCEPTOR_CACHE = new ConcurrentHashMap<>();
-
-    /**
-     * 拦截器调用链
-     */
-    protected final InterceptorChain interceptorChain = new InterceptorChain();
-
-    @Override
-    public InterceptorChain getInterceptorChain() {
-        return interceptorChain;
+    public DefaultInterceptorFactory() {
+        super();
     }
 
     @Override
     public <T extends Interceptor> T getInterceptor(Class<T> clazz) {
-        return (T) INTERCEPTOR_CACHE.computeIfAbsent(clazz, k -> {
+        return (T) interceptorRegistry.computeIfUnregister(clazz, k -> {
             try {
                 Constructor<? extends Interceptor> constructor = clazz.getConstructor();
                 return constructor.newInstance();

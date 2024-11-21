@@ -3,12 +3,13 @@ package org.hipeday.sphere.core.reflection;
 import org.hipeday.sphere.core.annotation.ClientProtocol;
 import org.hipeday.sphere.core.annotation.SphereClient;
 import org.hipeday.sphere.core.assertion.Assert;
-import org.hipeday.sphere.core.config.SphereConfiguration;
-import org.hipeday.sphere.core.network.Client;
-import org.hipeday.sphere.core.network.ClientFactories;
+import org.hipeday.sphere.core.context.SphereContext;
+import org.hipeday.sphere.core.context.SphereContextFactories;
+import org.hipeday.sphere.core.context.SphereContextFactory;
+import org.hipeday.sphere.core.handler.support.DefaultFunctionLifecycleHandler;
 import org.hipeday.sphere.core.network.InetAddress;
-import org.hipeday.sphere.core.network.SphereClientConfig;
-import org.hipeday.sphere.core.proxy.InterfaceProxyHandler;
+import org.hipeday.sphere.core.network.NetworkClientConfig;
+import org.hipeday.sphere.core.util.ClassUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -19,10 +20,8 @@ import java.lang.reflect.Method;
  * @author jixiangup
  * @since 1.0.0
  */
-public class SphereMethod<T> {
+public final class Function<T> {
 
-    private final InterfaceProxyHandler<T> proxyHandler;
-    private final SphereConfiguration configuration;
     private final Class<T> interfaceClass;
     private final Method method;
     private final ClientProtocol protocol;
@@ -31,19 +30,11 @@ public class SphereMethod<T> {
     private Object payload;
     private String heartbeat;
 
-    public SphereMethod(InterfaceProxyHandler<T> proxyHandler, SphereConfiguration configuration, Method method, Class<T> interfaceClass) {
-        this.proxyHandler = proxyHandler;
-        this.configuration = configuration;
+    public Function(Method method, Class<T> interfaceClass) {
         this.method = method;
         this.interfaceClass = interfaceClass;
-        SphereClient sphereClient = getSphereClient();
+        SphereClient sphereClient = ClassUtils.getAnnotation(SphereClient.class, interfaceClass);
         this.protocol = sphereClient.protocol();
-    }
-
-    public SphereClient getSphereClient() {
-        SphereClient sphereClient = interfaceClass.getAnnotation(SphereClient.class);
-        Assert.notNull(sphereClient, "The interface class does not use @SphereClient annotation");
-        return sphereClient;
     }
 
     /**
@@ -57,31 +48,16 @@ public class SphereMethod<T> {
         // 参数准备
         parameterPreparation(args);
 
-        // 1. 判断当前Client是否已经创建了连接 如果没有则创建连接否则从连接池获取
-        Client client = configuration.getNetworkClientCache().get(clientId);
-        if (client == null) {
-            SphereClientConfig<T> clientConfig = new SphereClientConfig<>(clientId, protocol, inetAddress, interfaceClass, heartbeat);
-            client = ClientFactories.getClientFactory(protocol).createClient(clientConfig, configuration);
-        }
+        // 创建上下文
+        NetworkClientConfig<T> networkClientConfig = new NetworkClientConfig<>(clientId, protocol, inetAddress, interfaceClass, heartbeat);
+        SphereContextFactory sphereContextFactory = SphereContextFactories.getSphereContextFactory(networkClientConfig, this);
+        SphereContext context = sphereContextFactory.createContext();
 
-        // 判断是否要缓存网络客户端
-        boolean networkClientCacheEnabled = configuration.isNetworkClientCacheEnabled();
-        if (networkClientCacheEnabled) {
-            SphereConfiguration.cacheNetworkClient(clientId, client);
-        }
-
-        // 判断当前客户端是否已经连接 如果没有连接则连接
-        if (!client.isConnected()) {
-            client.connect();
-        }
-
-        // 发送消息 这里的消息内容要重新获取 使用 @Command 去获取
-        Object data = client.getInterceptorChain().onBeforeExecute(client.getContext(), this.payload);
-        client.writeAndFlush(data);
-        return null;
+        // 调用方法
+        return new DefaultFunctionLifecycleHandler(context).handle();
     }
 
-    public void parameterPreparation(final Object ... args) {
+    private void parameterPreparation(final Object... args) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Assert.notEmpty(parameterAnnotations, "The parameter does not use @ClientId to identify the client's unique identifier");
         String address = null;
@@ -98,7 +74,7 @@ public class SphereMethod<T> {
                     case "org.hipeday.sphere.core.annotation.ClientPort":
                         port = Integer.parseInt(args[i].toString());
                         break;
-                    case "org.hipeday.sphere.core.annotation.Payload":
+                    case "org.hipeday.sphere.core.annotation.Command":
                         payload = args[i];
                         break;
                     case "org.hipeday.sphere.core.annotation.Heartbeat":
@@ -118,4 +94,19 @@ public class SphereMethod<T> {
         Assert.notNull(payload, "The parameter does not use @Payload to identify the client's payload");
     }
 
+    public Object getPayload() {
+        return payload;
+    }
+
+    public void setPayload(Object payload) {
+        this.payload = payload;
+    }
+
+    public Class<T> getInterfaceClass() {
+        return interfaceClass;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
 }

@@ -2,7 +2,6 @@ package org.hipeday.sphere.core.network;
 
 import org.hipeday.sphere.core.annotation.SphereClient;
 import org.hipeday.sphere.core.assertion.Assert;
-import org.hipeday.sphere.core.config.SphereConfiguration;
 import org.hipeday.sphere.core.context.SphereContext;
 import org.hipeday.sphere.core.interceptor.Interceptor;
 import org.hipeday.sphere.core.interceptor.InterceptorChain;
@@ -15,16 +14,14 @@ import org.hipeday.sphere.core.interceptor.InterceptorChain;
  */
 public abstract class AbstractClient implements Client {
 
-    protected final SphereClientConfig<?> config;
+    protected final NetworkClientConfig<?> config;
     protected final Class<?> interfaceClass;
-    protected final SphereConfiguration configuration;
     protected InterceptorChain interceptorChain;
     protected SphereContext context;
 
-    public AbstractClient(SphereClientConfig<?> config, SphereConfiguration configuration) {
+    public AbstractClient(NetworkClientConfig<?> config) {
         this.config = config;
         this.interfaceClass = config.interfaceClass();
-        this.configuration = configuration;
         init();
     }
 
@@ -52,7 +49,7 @@ public abstract class AbstractClient implements Client {
     }
 
     @Override
-    public SphereClientConfig<?> getConfig() {
+    public NetworkClientConfig<?> getConfig() {
         return config;
     }
 
@@ -60,13 +57,4 @@ public abstract class AbstractClient implements Client {
         this.context = context;
     }
 
-    @Override
-    public InterceptorChain getInterceptorChain() {
-        return interceptorChain;
-    }
-
-    @Override
-    public SphereConfiguration getConfiguration() {
-        return configuration;
-    }
 }

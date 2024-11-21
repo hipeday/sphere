@@ -1,7 +1,8 @@
 package org.hipeday.sphere.core.proxy;
 
-import org.hipeday.sphere.core.config.SphereConfiguration;
-import org.hipeday.sphere.core.reflection.SphereMethod;
+import org.hipeday.sphere.core.context.ApplicationContext;
+import org.hipeday.sphere.core.reflection.Function;
+import org.hipeday.sphere.core.registry.support.FunctionRegistry;
 import org.hipeday.sphere.core.util.ArrayUtils;
 import org.hipeday.sphere.core.util.MethodHandlesUtils;
 
@@ -13,8 +14,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 接口代理处理器
@@ -24,31 +23,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class InterfaceProxyHandler<T> implements InvocationHandler {
 
-    private final Map<Method, SphereMethod<T>> sphereMethodCache = new ConcurrentHashMap<>();
-
-    private final List<Annotation> annotations = new LinkedList<>();
-
-    private final MethodHandles.Lookup defaultMethodLookup;
-
-    /**
-     * 配置
-     */
-    private final SphereConfiguration configuration;
-
     /**
      * 接口类
      */
     private final Class<T> interfaceClass;
+    private final FunctionRegistry functionRegistry;
+    private final List<Annotation> annotations = new LinkedList<>();
+    private final MethodHandles.Lookup defaultMethodLookup;
+
 
     /**
      * 构造方法
      *
-     * @param configuration 配置
      * @param interfaceClass 接口类
      */
-    public InterfaceProxyHandler(SphereConfiguration configuration, Class<T> interfaceClass) {
-        this.configuration = configuration;
+    public InterfaceProxyHandler(Class<T> interfaceClass) {
         this.interfaceClass = interfaceClass;
+        ApplicationContext applicationContext = ApplicationContext.getApplicationContext();
+        functionRegistry = applicationContext.getFunctionRegistry();
 
         // 初始化
         init();
@@ -83,8 +75,11 @@ public class InterfaceProxyHandler<T> implements InvocationHandler {
                 if (method.isDefault()) {
                     continue;
                 }
-                SphereMethod<T> sphereMethod = new SphereMethod<>(this, configuration, method, interfaceClass);
-                sphereMethodCache.put(method, sphereMethod);
+                boolean registered = functionRegistry.isRegistered(method);
+                if (!registered) {
+                    Function<T> function = new Function<>(method, interfaceClass);
+                    functionRegistry.register(method, function);
+                }
             }
         }
     }
@@ -137,15 +132,15 @@ public class InterfaceProxyHandler<T> implements InvocationHandler {
             return invokeDefaultMethod(proxy, method, args);
         }
 
-        SphereMethod<T> sphereMethod = sphereMethodCache.get(method);
+        Function<?> function = functionRegistry.getInstance(method);
 
-        if (sphereMethod == null) {
+        if (function == null) {
             // TODO 执行一些默认方法
             throw new NoSuchMethodException("Method not found: " + methodName);
         }
 
         // 调用函数
-        return sphereMethod.invoke(args);
+        return function.invoke(args);
     }
 
     private Object invokeDefaultMethod(Object proxy, Method method, Object[] args)

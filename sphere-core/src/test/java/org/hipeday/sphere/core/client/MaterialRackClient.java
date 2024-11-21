@@ -5,7 +5,7 @@ import org.hipeday.sphere.core.annotation.ClientId;
 import org.hipeday.sphere.core.annotation.ClientPort;
 import org.hipeday.sphere.core.annotation.ClientProtocol;
 import org.hipeday.sphere.core.annotation.Heartbeat;
-import org.hipeday.sphere.core.annotation.Payload;
+import org.hipeday.sphere.core.annotation.Command;
 import org.hipeday.sphere.core.annotation.SphereClient;
 import org.hipeday.sphere.core.interceptor.OnActiveInterceptor;
 import org.hipeday.sphere.core.listener.HeartbeatListener;
@@ -27,7 +27,7 @@ public interface MaterialRackClient {
             @ClientId String clientId,
             @ClientAddress String address,
             @ClientPort Integer port,
-            @Payload String message,
+            @Command String message,
             @Heartbeat String heartbeat
     );
 

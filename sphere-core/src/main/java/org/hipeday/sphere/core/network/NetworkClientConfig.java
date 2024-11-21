@@ -8,12 +8,12 @@ import org.hipeday.sphere.core.listener.Listener;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Sphere 客户端配置
+ * Sphere 网络客户端配置
  *
  * @author jixiangup
  * @since 1.0.0
  */
-public record SphereClientConfig<T>(
+public record NetworkClientConfig<T>(
         String clientId,
         ClientProtocol protocol,
         InetAddress serverAddress,

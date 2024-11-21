@@ -6,19 +6,19 @@ package org.hipeday.sphere.core.handler;
  * @author jixiangup
  * @since 1.0.0
  */
-public interface MethodLifecycleHandler extends LifecycleHandler {
+public interface FunctionLifecycleHandler extends LifecycleHandler {
 
     /**
      * 方法调用前的处理逻辑
      */
-    void onBefore();
+    Object onBefore();
 
     /**
      * 方法执行期间的处理逻辑（可进行环绕逻辑）
      *
      * @return 方法返回值
      */
-    Object invoke();
+    Object invoke(Object command);
 
     /**
      * 方法成功执行后的处理逻辑
@@ -34,13 +34,14 @@ public interface MethodLifecycleHandler extends LifecycleHandler {
      * 方法完成后的清理逻辑（无论成功或失败）
      */
     void onComplete();
+
     /**
      * 在生命周期内调用拦截器
      */
     default Object handle() {
         try {
-            onBefore();
-            Object result = invoke();
+            Object before = onBefore();
+            Object result = invoke(before);
             onSuccess();
             return result;
         } catch (Exception e) {

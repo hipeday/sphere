@@ -1,26 +1,25 @@
 package org.hipeday.sphere.core.proxy;
 
-import org.hipeday.sphere.core.config.SphereConfiguration;
+import org.hipeday.sphere.core.context.ApplicationContext;
+import org.hipeday.sphere.core.registry.support.InterfaceClientRegistry;
 
 import java.lang.reflect.Proxy;
 
 /**
- * 代理工厂
+ * 代理对象工厂
  *
  * @author jixiangup
  * @since 1.0.0
  */
 public class ProxyFactory<T> {
 
-    private final SphereConfiguration configuration;
-
     private final Class<T> interfaceClass;
+    private final InterfaceClientRegistry interfaceClientRegistry;
 
-    private InterfaceProxyHandler<T> interfaceProxyHandler;
-
-    public ProxyFactory(SphereConfiguration configuration, Class<T> interfaceClass) {
-        this.configuration = configuration;
+    public ProxyFactory(Class<T> interfaceClass) {
         this.interfaceClass = interfaceClass;
+        ApplicationContext applicationContext = ApplicationContext.getApplicationContext();
+        interfaceClientRegistry = applicationContext.getInterfaceClientRegistry();
     }
 
     /**
@@ -28,23 +27,17 @@ public class ProxyFactory<T> {
      *
      * @return 代理实例
      */
+    @SuppressWarnings("unchecked")
     public T createProxy() {
-        T proxy = (T) configuration.getInstanceCache().get(interfaceClass);
-
-        boolean cacheEnabled = configuration.isCacheEnabled();
-        if (cacheEnabled && proxy != null) {
-            return proxy;
-        }
-
-        synchronized (configuration.getInstanceCache()) {
-            proxy = (T) configuration.getInstanceCache().get(interfaceClass);
-            if (cacheEnabled && proxy != null) {
-                return proxy;
-            }
-            interfaceProxyHandler = new InterfaceProxyHandler<>(configuration, interfaceClass);
-            proxy = (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass, SphereClientProxy.class}, interfaceProxyHandler);
-            if (cacheEnabled) {
-                configuration.getInstanceCache().put(interfaceClass, proxy);
+        T proxy = (T) interfaceClientRegistry.getInstance(interfaceClass.getName());
+        if (proxy == null)  {
+            synchronized (interfaceClientRegistry) {
+                proxy = (T) interfaceClientRegistry.getInstance(interfaceClass.getName());
+                if (proxy == null) {
+                    InterfaceProxyHandler<T> interfaceProxyHandler = new InterfaceProxyHandler<>(interfaceClass);
+                    proxy = (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass, SphereClientProxy.class}, interfaceProxyHandler);
+                    interfaceClientRegistry.register(interfaceClass.getName(), proxy);
+                }
             }
         }
         return proxy;

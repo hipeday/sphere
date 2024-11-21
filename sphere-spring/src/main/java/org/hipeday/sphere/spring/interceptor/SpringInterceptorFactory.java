@@ -1,6 +1,6 @@
 package org.hipeday.sphere.spring.interceptor;
 
-import org.hipeday.sphere.core.interceptor.DefaultInterceptorFactory;
+import org.hipeday.sphere.core.interceptor.support.DefaultInterceptorFactory;
 import org.hipeday.sphere.core.interceptor.Interceptor;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

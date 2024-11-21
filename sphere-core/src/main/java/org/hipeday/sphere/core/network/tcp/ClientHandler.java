@@ -3,10 +3,9 @@ package org.hipeday.sphere.core.network.tcp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.hipeday.sphere.core.config.SphereConfiguration;
+import org.hipeday.sphere.core.context.ApplicationContext;
 import org.hipeday.sphere.core.context.SphereContext;
-import org.hipeday.sphere.core.context.TCPSession;
-import org.hipeday.sphere.core.interceptor.InterceptorChain;
+import org.hipeday.sphere.core.session.support.TCPSession;
 import org.hipeday.sphere.core.listener.Listener;
 import org.hipeday.sphere.core.util.StringUtils;
 import org.slf4j.Logger;
@@ -24,12 +23,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
-    private final InterceptorChain interceptorChain;
     private final SphereContext context;
 
-    public ClientHandler(InterceptorChain interceptorChain, SphereContext context) {
-        this.interceptorChain = interceptorChain;
-        this.context = context;
+    public ClientHandler(String clientId) {
+        this.context = ApplicationContext.getApplicationContext().getSphereContextRegistry().getInstance(clientId);
     }
 
     @Override
@@ -37,11 +34,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         if (context.getClient().getSession() == null) {
             context.getClient().setSession(new TCPSession(ctx.channel()));
         }
-        interceptorChain.activated(context);
+        // TODO 执行监听器 触发active
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         String heartbeatCommand = context.getClient().getConfig().heartbeat();
         if (msg instanceof ByteBuf byteArrayMessage) {
             byte[] data = new byte[byteArrayMessage.readableBytes()];

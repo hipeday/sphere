@@ -1,5 +1,6 @@
 package org.hipeday.sphere.core.listener;
 
+import org.hipeday.sphere.core.callback.OnActive;
 import org.hipeday.sphere.core.context.SphereContext;
 
 /**
@@ -8,7 +9,7 @@ import org.hipeday.sphere.core.context.SphereContext;
  * @author jixiangup
  * @since 1.0.0
  */
-public interface Listener {
+public interface Listener extends OnActive {
 
     void listener(SphereContext context, byte[] message);
 
