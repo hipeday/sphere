@@ -1,7 +1,9 @@
 package org.hipeday.sphere.core.listener;
 
 import org.hipeday.sphere.core.context.SphereContext;
+import org.hipeday.sphere.core.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,8 +17,11 @@ public class ListenerChain implements Listener {
     private final List<Listener> listeners;
 
     public ListenerChain(List<Listener> listeners) {
-        this.listeners = listeners;
-        // TODO 为监听器排序
+        if (CollectionUtils.isEmpty(listeners)) {
+            this.listeners = Collections.emptyList();
+        } else {
+            this.listeners = listeners;
+        }
     }
 
     @Override

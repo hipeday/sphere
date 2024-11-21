@@ -8,6 +8,8 @@ import org.hipeday.sphere.core.interceptor.InterceptorFactory;
 import org.hipeday.sphere.core.listener.Listener;
 import org.hipeday.sphere.core.listener.ListenerChain;
 import org.hipeday.sphere.core.listener.ListenerFactory;
+import org.hipeday.sphere.core.listener.support.DefaultConnectedListener;
+import org.hipeday.sphere.core.listener.support.DefaultHeartbeatListener;
 import org.hipeday.sphere.core.network.Client;
 import org.hipeday.sphere.core.reflection.Function;
 import org.hipeday.sphere.core.registry.support.InterceptorChainRegistry;
@@ -21,6 +23,7 @@ import org.hipeday.sphere.core.util.MethodUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * 抽象 Sphere 上下文
@@ -29,6 +32,8 @@ import java.util.List;
  * @since 1.0.0
  */
 public abstract class AbstractSphereContext implements SphereContext {
+
+    protected static final List<Class<? extends Listener>> DEFAULT_LISTENERS = Stream.of(DefaultConnectedListener.class, DefaultHeartbeatListener.class).toList();
 
     protected final Client client;
     protected final Function<?> function;
@@ -150,6 +155,9 @@ public abstract class AbstractSphereContext implements SphereContext {
      * 创建监听器调用链
      */
     protected void createListenerChain() {
+        // 添加默认监听器
+        List<? extends Listener> defaultListeners = parseDefaultListener();
+
         // 获取全局监听器 暂时还没有配置以后再说 先留口子
 
         // 解析接口声明监听器
@@ -161,8 +169,18 @@ public abstract class AbstractSphereContext implements SphereContext {
         // 所有的监听器
         List<Listener> listeners = CollectionUtils.mergeToList(interfaceListeners, functionListeners);
 
+        if (CollectionUtils.isEmpty(listeners)) {
+            listeners = new ArrayList<>();
+        }
+        listeners.addAll(0, defaultListeners);
+
         // 创建监听器调用链
-        ListenerChain listenerChain = listenerChainRegistry.computeIfUnregister(client.clientId(), clientId -> new ListenerChain(listeners));
+        final List<Listener> finalListeners = listeners;
+        ListenerChain listenerChain = listenerChainRegistry.computeIfUnregister(client.clientId(), clientId -> new ListenerChain(finalListeners));
+    }
+
+    private List<? extends Listener> parseDefaultListener() {
+        return DEFAULT_LISTENERS.stream().map(listenerFactory::getListener).toList();
     }
 
     private List<Listener> parseFunctionListeners(SphereFunction annotation) {

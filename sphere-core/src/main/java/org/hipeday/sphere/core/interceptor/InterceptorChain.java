@@ -3,6 +3,7 @@ package org.hipeday.sphere.core.interceptor;
 import org.hipeday.sphere.core.context.SphereContext;
 import org.hipeday.sphere.core.network.Client;
 import org.hipeday.sphere.core.util.ArrayUtils;
+import org.hipeday.sphere.core.util.CollectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +36,11 @@ public class InterceptorChain implements Interceptor {
     }
 
     public InterceptorChain(List<Interceptor> interceptors) {
-        this.interceptors = interceptors;
+        if (CollectionUtils.isEmpty(interceptors)) {
+            this.interceptors = Collections.emptyList();
+        } else {
+            this.interceptors = interceptors;
+        }
     }
 
     public InterceptorChain(Class<? extends Interceptor>[] interceptorClasses) {
