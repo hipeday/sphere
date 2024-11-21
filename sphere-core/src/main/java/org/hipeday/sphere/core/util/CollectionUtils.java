@@ -23,6 +23,16 @@ public class CollectionUtils {
     }
 
     /**
+     * 判断集合是否不为空
+     *
+     * @param c 集合
+     * @return 是否不为空
+     */
+    public static boolean isNotEmpty(Collection<?> c) {
+        return !isEmpty(c);
+    }
+
+    /**
      * 将两个集合合并为一个 {@linkplain List list}
      * @param c1 集合1
      * @param c2 集合2

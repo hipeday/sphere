@@ -17,7 +17,7 @@ class SphereTest {
     @Test
     void client() {
         MaterialRackClient client = Sphere.client(MaterialRackClient.class);
-        client.invoke("客户端ID", "191.168.2.5", 6800, "消息负载", "www.usr.cn");
+        client.invoke("客户端ID", "127.0.0.1", 6800, "消息负载", "www.usr.cn");
         while (true) {
 
         }

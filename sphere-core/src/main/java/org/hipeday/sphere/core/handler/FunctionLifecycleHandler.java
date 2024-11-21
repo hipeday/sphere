@@ -28,7 +28,7 @@ public interface FunctionLifecycleHandler extends LifecycleHandler {
     /**
      * 方法抛出异常时的处理逻辑
      */
-    void onError();
+    void onError(Throwable th);
 
     /**
      * 方法完成后的清理逻辑（无论成功或失败）
@@ -45,7 +45,7 @@ public interface FunctionLifecycleHandler extends LifecycleHandler {
             onSuccess();
             return result;
         } catch (Exception e) {
-            onError();
+            onError(e);
         } finally {
             onComplete();
         }

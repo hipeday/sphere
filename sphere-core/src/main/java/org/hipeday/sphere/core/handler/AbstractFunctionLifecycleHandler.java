@@ -2,6 +2,7 @@ package org.hipeday.sphere.core.handler;
 
 import org.hipeday.sphere.core.context.SphereContext;
 import org.hipeday.sphere.core.interceptor.InterceptorChain;
+import org.hipeday.sphere.core.listener.ListenerChain;
 import org.hipeday.sphere.core.reflection.Function;
 
 /**
@@ -26,12 +27,14 @@ public abstract class AbstractFunctionLifecycleHandler implements FunctionLifecy
      * 拦截器调用链
      */
     protected final InterceptorChain interceptorChain;
+    protected final ListenerChain listenerChain;
 
 
     public AbstractFunctionLifecycleHandler(SphereContext context) {
         this.context = context;
         this.function = context.getFunction();
         this.interceptorChain = context.getInterceptorChain();
+        this.listenerChain = context.getListenerChain();
     }
 
     /**
@@ -48,7 +51,7 @@ public abstract class AbstractFunctionLifecycleHandler implements FunctionLifecy
             onSuccess();
             return result;
         } catch (Exception e) {
-            onError();
+            onError(e);
         } finally {
             onComplete();
         }

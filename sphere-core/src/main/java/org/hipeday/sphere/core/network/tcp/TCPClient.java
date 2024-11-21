@@ -3,10 +3,14 @@ package org.hipeday.sphere.core.network.tcp;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ConnectTimeoutException;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.hipeday.sphere.core.exception.SphereRuntimeException;
+import org.hipeday.sphere.core.network.ConnectException;
 import org.hipeday.sphere.core.session.Session;
 import org.hipeday.sphere.core.session.support.TCPSession;
 import org.hipeday.sphere.core.logging.SphereLogger;
@@ -34,21 +38,34 @@ public class TCPClient extends AbstractClient {
 
     @Override
     public void connect() {
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(group)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .handler(new ChannelInitializer<>() {
+                    @Override
+                    protected void initChannel(Channel ch) throws Exception {
+                        ch.pipeline().addLast(new ClientHandler(config.clientId()));
+                    }
+                });
+        InetAddress inetAddress = config.serverAddress();
+        ChannelFuture connect = bootstrap.connect(inetAddress.getHost(), inetAddress.getPort());
+        connect.addListener(future -> {
+            if (!future.isSuccess()) {
+                Throwable cause = future.cause();
+                if (cause instanceof ConnectTimeoutException e) {
+                    throw new org.hipeday.sphere.core.network.ConnectTimeoutException(e.getMessage(), e);
+                } else if (cause instanceof java.net.ConnectException e) {
+                    throw new ConnectException(e.getMessage(), e);
+                }
+                throw new ConnectException(future.cause().getMessage(), cause);
+            }
+        });
         try {
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(group)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.SO_KEEPALIVE, true)
-                    .handler(new ChannelInitializer<>() {
-                        @Override
-                        protected void initChannel(Channel ch) throws Exception {
-                            ch.pipeline().addLast(new ClientHandler(config.clientId()));
-                        }
-                    });
-            InetAddress inetAddress = config.serverAddress();
-            bootstrap.connect(inetAddress.getHost(), inetAddress.getPort()).sync();
+            connect.sync();
+            this.session = new TCPSession(connect.channel());
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new SphereRuntimeException(e);
         }
     }
 
@@ -64,6 +81,7 @@ public class TCPClient extends AbstractClient {
 
     @Override
     public void writeAndFlush(Object msg) {
+        log.info("发送消息回调");
         if (session.getChannel() == null) {
             throw new IllegalStateException("Channel is not connected");
         }

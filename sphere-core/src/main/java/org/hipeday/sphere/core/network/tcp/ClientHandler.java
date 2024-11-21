@@ -30,6 +30,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
+        log.info("连接成功回调");
         if (context.getClient().getSession() == null) {
             context.getClient().setSession(new TCPSession(ctx.channel()));
         }
@@ -54,5 +55,19 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 listenerChain.message(context, data);
             }
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        // 连接断开
+        ctx.close();
+        // 重置 session 会话
+        context.getClient().setSession(null);
+        context.getListenerChain().disconnected(context);
     }
 }

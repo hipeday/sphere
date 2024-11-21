@@ -37,4 +37,18 @@ public class ListenerChain implements Listener {
             listener.activated(context);
         }
     }
+
+    @Override
+    public void onError(SphereContext context, Throwable th) {
+        for (Listener listener : listeners) {
+            listener.onError(context, th);
+        }
+    }
+
+    @Override
+    public void disconnected(SphereContext context) {
+        for (Listener listener : listeners) {
+            listener.disconnected(context);
+        }
+    }
 }

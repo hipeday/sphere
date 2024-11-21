@@ -77,8 +77,14 @@ public abstract class AbstractSphereContext implements SphereContext {
         // 所有的拦截器
         List<Interceptor> interceptors = CollectionUtils.mergeToList(interfaceInterceptors, functionInterceptors);
 
+        // 去除重复的拦截器
+        if (CollectionUtils.isNotEmpty(interceptors)) {
+            interceptors = interceptors.stream().distinct().toList();
+        }
+
         // 创建拦截器调用链
-        InterceptorChain interceptorChain = interceptorChainRegistry.computeIfUnregister(client.clientId(), clientId -> new InterceptorChain(interceptors));
+        final List<Interceptor> finalInterceptors = interceptors;
+        InterceptorChain interceptorChain = interceptorChainRegistry.computeIfUnregister(client.clientId(), clientId -> new InterceptorChain(finalInterceptors));
     }
 
     /**
@@ -173,6 +179,9 @@ public abstract class AbstractSphereContext implements SphereContext {
             listeners = new ArrayList<>();
         }
         listeners.addAll(0, defaultListeners);
+
+        // 去除重复的监听器
+        listeners = listeners.stream().distinct().toList();
 
         // 创建监听器调用链
         final List<Listener> finalListeners = listeners;
