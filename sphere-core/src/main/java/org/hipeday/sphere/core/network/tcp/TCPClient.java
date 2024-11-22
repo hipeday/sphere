@@ -45,7 +45,7 @@ public class TCPClient extends AbstractClient {
                 .handler(new ChannelInitializer<>() {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {
-                        ch.pipeline().addLast(new ClientHandler(config.clientId()));
+                        ch.pipeline().addLast(new TCPClientHandler(config.clientId()));
                     }
                 });
         InetAddress inetAddress = config.serverAddress();

@@ -13,18 +13,18 @@ import org.hipeday.sphere.core.util.StringUtils;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 客户端处理器
+ * TCP客户端处理器
  *
  * @author jixiangup
  * @since 1.0.0
  */
-public class ClientHandler extends ChannelInboundHandlerAdapter {
+public class TCPClientHandler extends ChannelInboundHandlerAdapter {
 
-    private static final SphereLogger log = SphereLogger.getLogger(ClientHandler.class);
+    private static final SphereLogger log = SphereLogger.getLogger(TCPClientHandler.class);
 
     private final SphereContext context;
 
-    public ClientHandler(String clientId) {
+    public TCPClientHandler(String clientId) {
         this.context = ApplicationContext.getApplicationContext().getSphereContextRegistry().getInstance(clientId);
     }
 

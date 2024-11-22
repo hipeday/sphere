@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * @since 1.0.0
  */
 @Documented
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Heartbeat {
 }
